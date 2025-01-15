@@ -25,7 +25,7 @@ pub type TransactionExecution<'a> = ExecutionV1<'a, RpcAccount<'a>>;
 pub const NO_CONSTRUCTOR_ARG: Vec<Felt> = Vec::new();
 
 // Montgomery representation for value 0x1000000000000
-pub const MAX_FEE: Felt = Felt::from_hex_unchecked("0x4563918244F40000");
+pub const MAX_FEE: Felt = Felt::from_hex_unchecked("0x2A5A058FC295ED00");
 
 pub trait StarknetContractClient {
     fn address(&self) -> FieldElement;

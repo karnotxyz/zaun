@@ -3,7 +3,7 @@ pub mod errors;
 use std::sync::Arc;
 
 use color_eyre::{eyre::eyre, Result};
-use starknet_accounts::{Account, Call, ExecutionV1, SingleOwnerAccount};
+use starknet_accounts::{Account, Call, ExecutionV1, SingleOwnerAccount, AccountError};
 use starknet_contract::ContractFactory;
 use starknet_core::types::contract::{CompiledClass, SierraClass};
 use starknet_core::types::{BlockId, BlockTag, Felt, FunctionCall, InvokeTransactionResult};
@@ -12,7 +12,9 @@ use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet_providers::Provider;
 use starknet_signers::LocalWallet;
+use starknet_core::types::StarknetError;
 use std::path::Path;
+use starknet_providers::ProviderError;
 
 pub type LocalWalletSignerMiddleware =
     Arc<SingleOwnerAccount<Arc<JsonRpcClient<HttpTransport>>, LocalWallet>>;
@@ -48,7 +50,35 @@ pub async fn invoke_contract(
         .max_fee(MAX_FEE)
         .send()
         .await
-        .map_err(|e| eyre!("Failed to send transaction: {}", e))
+        .map_err(|account_error| {
+            match account_error {
+                AccountError::Provider(provider_error) => {
+                    match provider_error {
+                        ProviderError::StarknetError(stark_err) => {
+                            match stark_err {
+                                StarknetError::ValidationFailure(details) => {
+                                    eyre!("Validation failure: {}", details)
+                                }
+                                StarknetError::TransactionExecutionError(data) => {
+                                    eyre!("Transaction execution error: {:?}", data)
+                                }
+                                StarknetError::ContractError(data) => {
+                                    eyre!("Contract error: {:?}", data)
+                                }
+                                _ => eyre!("Starknet error: {} ({})", stark_err.message(), stark_err)
+                            }
+                        }
+                        ProviderError::RateLimited => eyre!("Request rate limited"),
+                        ProviderError::ArrayLengthMismatch => eyre!("Array length mismatch"),
+                        ProviderError::Other(err) => eyre!("Provider error: {}", err),
+                    }
+                }
+                AccountError::Signing(err) => eyre!("Signing error: {:?}", err),
+                AccountError::ClassHashCalculation(err) => eyre!("Class hash calculation error: {}", err),
+                AccountError::ClassCompression(err) => eyre!("Class compression error: {}", err),
+                AccountError::FeeOutOfRange => eyre!("Fee calculation overflow"),
+            }
+        })
 }
 
 pub async fn call_contract(

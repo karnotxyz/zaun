@@ -20,7 +20,8 @@ impl CoreContract {
         onchain_data_hash: Felt,
         onchain_data_size: U256,
     ) -> Result<InvokeTransactionResult> {
-        let mut calldata = Vec::with_capacity(program_output.len() + 3);
+        let mut calldata = Vec::with_capacity(program_output.len() + 4);
+        calldata.push(Felt::from(program_output.len()));
         calldata.extend(program_output);
         calldata.push(onchain_data_hash);
         calldata.push(onchain_data_size.low().into());

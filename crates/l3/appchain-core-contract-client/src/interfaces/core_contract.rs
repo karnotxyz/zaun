@@ -16,13 +16,11 @@ impl CoreContract {
 
     pub async fn update_state(
         &self,
-        snos_output: Vec<Felt>,
         program_output: Vec<Felt>,
         onchain_data_hash: Felt,
         onchain_data_size: U256,
     ) -> Result<InvokeTransactionResult> {
-        let mut calldata = Vec::with_capacity(snos_output.len() + program_output.len() + 2);
-        calldata.extend(snos_output);
+        let mut calldata = Vec::with_capacity(program_output.len() + 3);
         calldata.extend(program_output);
         calldata.push(onchain_data_hash);
         calldata.push(onchain_data_size.low().into());

@@ -15,6 +15,22 @@ WARN      := \033[1;31m
 
 RESET     := \033[0m
 
+ARTIFACTS := "./build_artifacts"
+
+# dim white italic
+DIM            := \033[2;3;37m
+
+# bold cyan
+INFO           := \033[1;36m
+
+# bold green
+PASS           := \033[1;32m
+
+# bold red
+WARN           := \033[1;31m
+
+RESET          := \033[0m
+
 .PHONY: artifacts
 artifacts:
 	@if [ -d "$(ARTIFACTS)/starkgate_4594188" ] || \

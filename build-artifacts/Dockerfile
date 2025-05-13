@@ -89,7 +89,7 @@ RUN git checkout $STARKGATE_REV
 
 # Build
 WORKDIR src/starkware
-COPY build-artifacts/starkgate-contracts-82e651f/foundry.toml .
+COPY foundry-starkgate.toml foundry.toml
 RUN forge build
 
 # =========================================================================== #
@@ -111,7 +111,7 @@ WORKDIR cairo-lang
 RUN git checkout $CAIRO_LANG_REV
 
 # Build
-COPY build-artifacts/cairo-lang/foundry.toml .
+COPY foundry-cairo-lang.toml foundry.toml
 RUN forge build
 
 # =========================================================================== #

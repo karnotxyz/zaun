@@ -37,9 +37,9 @@ starkgate-contracts-latest:
 	git checkout $(STARKGATE_CONTRACTS_RELEASE_VERSION) && \
 	./scripts/setup.sh && \
 	FILES=$$(cat src/solidity/files_to_compile.txt) && \
- 	solc $$FILES --allow-paths .=., --optimize --optimize-runs 200 --overwrite --combined-json abi,bin -o artifacts && \
- 	./scripts/extract_artifacts.py
- 	# building ERC20 (test)
+	solc $$FILES --allow-paths .=., --optimize --optimize-runs 200 --overwrite --combined-json abi,bin -o artifacts && \
+	./scripts/extract_artifacts.py
+	# building ERC20 (test)
 	cp build-artifacts/starkgate-contracts/foundry.toml lib/starkgate-contracts/starkware/solidity/foundry.toml && \
 	cd lib/starkgate-contracts/starkware/solidity && \
 	echo "pragma solidity ^0.8.0; import \"./ERC20.sol\"; contract ERC20_1 is ERC20 { constructor() { _mint(msg.sender, 100000000000); } }" > ./tokens/ERC20/ERC20_1.sol && \
@@ -72,10 +72,10 @@ starkgate-contracts-82e651f:
 	# Checking out to the commit and Building
 	cp build-artifacts/starkgate-contracts-82e651f/foundry.toml lib/starkgate-contracts-82e651f/src/starkware/foundry.toml
 	cd lib/starkgate-contracts-82e651f && \
-    git checkout $(STARKGATE_LEGACY_CONTRACTS_COMMIT_HASH) && \
-    cd src/starkware && \
-    forge build
-    # Copying Contracts
+	git checkout $(STARKGATE_LEGACY_CONTRACTS_COMMIT_HASH) && \
+	cd src/starkware && \
+	forge build
+	# Copying Contracts
 	cp lib/starkgate-contracts-82e651f/src/starkware/out/StarknetEthBridge.sol/StarknetEthBridge.json artifacts/starkgate-contracts-0.9/StarknetLegacyBridge.json
 
 l2-artifacts:
@@ -86,3 +86,10 @@ l2-artifacts:
 	make starkgate-contracts-82e651f
 	python3 build-artifacts/convert.py
 	echo "L2 Artifacts built ✅"
+
+.PHONY: artifacts
+artifacts:
+	@docker build -f ./build-artifacts/Dockerfile -t contracts .
+	@docker create --name contracts contracts do-nothing > /dev/null
+	@docker cp contracts:/artifacts/. ./build-artifacts/
+	@docker rm contracts > /dev/null

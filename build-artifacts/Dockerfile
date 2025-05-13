@@ -79,7 +79,6 @@ RUN ./build.sh
 
 FROM builder AS starkgate-82e651f
 ENV STARKGATE_REV="82e651f5f642508577b6310f47d0d457f5f9a9bb"
-ENV STARKGATE_DIR="/contracts/starkgate-contracts"
 
 # Clone repository
 RUN git clone https://github.com/starknet-io/starkgate-contracts.git
@@ -95,9 +94,8 @@ RUN forge build
 #                                   CAIRO-LANG                                #
 # =========================================================================== #
 
-FROM builder as cairo-lang
+FROM builder AS cairo-lang
 ENV CAIRO_LANG_REV="8e11b8cc65ae1d0959328b1b4a40b92df8b58595"
-ENV CAIRO_LANG_DIR="/contracts/cairo-lang"
 
 # Clone the repo
 RUN git clone https://github.com/starkware-libs/cairo-lang.git
@@ -107,6 +105,27 @@ RUN git checkout $CAIRO_LANG_REV
 # Build
 COPY build-artifacts/foundry-cairo-lang.toml foundry.toml
 RUN forge build
+
+# =========================================================================== #
+#                                  PILTOVER                                   #
+# =========================================================================== #
+
+FROM builder AS piltover
+ENV PILTOVER_REV="ff8853fde770fac31ea071892242e12cd386a3f1"
+ENV SCARB_VERSION="2.5.3"
+ENV SCARB_RELEASES="https://github.com/software-mansion/scarb/releases/download"
+ENV SCARB_URL="$SCARB_RELEASES/v$SCARB_VERSION/scarb-v$SCARB_VERSION-x86_64-unknown-linux-gnu.tar.gz"
+
+# Clone the repo
+RUN git clone https://github.com/keep-starknet-strange/piltover.git
+WORKDIR piltover
+RUN git checkout $PILTOVER_REV
+
+# Setup scarb
+RUN mkdir scarb && wget -c $SCARB_URL -O - | tar -xz -C scarb --strip-components=1
+
+# Build
+RUN ./scarb/bin/scarb build
 
 # =========================================================================== #
 #                               LOCAL CONTRACTS                               #
@@ -173,3 +192,10 @@ ENV ARTIFACTS_LOCAL="$LOCAL_CONTRACTS_DIR/out"
 
 COPY --from=local-contracts $ARTIFACTS_LOCAL/StarknetDevCoreContract.sol/Starknet.json .
 COPY --from=local-contracts $ARTIFACTS_LOCAL/UnsafeProxy.sol/UnsafeProxy.json .
+
+WORKDIR ../piltover
+
+ENV PILTOVER_DIR="/contracts/piltover"
+ENV ARTIFACTS_PILTOVER="$PILTOVER_DIR/target"
+
+COPY --from=piltover $ARTIFACTS_PILTOVER/dev/. .

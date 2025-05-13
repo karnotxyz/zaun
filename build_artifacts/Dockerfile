@@ -87,7 +87,7 @@ RUN git checkout $STARKGATE_REV
 
 # Build
 WORKDIR src/starkware
-COPY build-artifacts/foundry-starkgate.toml foundry.toml
+COPY build_artifacts/foundry-starkgate.toml foundry.toml
 RUN forge build
 
 # =========================================================================== #
@@ -103,7 +103,7 @@ WORKDIR cairo-lang
 RUN git checkout $CAIRO_LANG_REV
 
 # Build
-COPY build-artifacts/foundry-cairo-lang.toml foundry.toml
+COPY build_artifacts/foundry-cairo-lang.toml foundry.toml
 RUN forge build
 
 # =========================================================================== #
@@ -185,13 +185,13 @@ ENV CAIRO_LANG_DIR="/contracts/cairo-lang"
 
 COPY --from=cairo-lang $CAIRO_LANG_DIR/out/Starknet.sol/Starknet.json Starknet.json
 
-WORKDIR ../local-contracts
+WORKDIR ../local_contracts
 
 ENV LOCAL_CONTRACTS_DIR="/contracts/local-contracts"
 ENV ARTIFACTS_LOCAL="$LOCAL_CONTRACTS_DIR/out"
 
-COPY --from=local-contracts $ARTIFACTS_LOCAL/StarknetDevCoreContract.sol/Starknet.json .
-COPY --from=local-contracts $ARTIFACTS_LOCAL/UnsafeProxy.sol/UnsafeProxy.json .
+COPY --from=local-contracts $ARTIFACTS_LOCAL/StarknetDevCoreContract.sol/Starknet.json StarknetDevCoreContract.json
+COPY --from=local-contracts $ARTIFACTS_LOCAL/UnsafeProxy.sol/UnsafeProxy.json UnsafeProxy.json
 
 WORKDIR ../piltover
 

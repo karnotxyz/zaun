@@ -12,7 +12,7 @@ type Address = H160;
 
 abigen!(
     StarknetTokenBridge,
-    "../../../artifacts/starkgate-contracts/StarknetTokenBridge.json",
+    "../../../build_artifacts/starkgate_4594188/StarknetTokenBridge.json",
 );
 
 #[async_trait]

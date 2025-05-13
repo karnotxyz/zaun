@@ -12,7 +12,7 @@ type Address = H160;
 
 abigen!(
     StarkgateRegistry,
-    "../../../artifacts/starkgate-contracts/StarkgateRegistry.json",
+    "../../../build_artifacts/starkgate_4594188/StarkgateRegistry.json",
 );
 
 #[async_trait]

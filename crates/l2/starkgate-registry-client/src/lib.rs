@@ -8,7 +8,7 @@ pub mod clients;
 pub mod interfaces;
 
 const STARKGATE_REGISTRY: &str =
-    include_str!("../../../../artifacts/starkgate-contracts/StarkgateRegistry.json");
+    include_str!("../../../../build_artifacts/starkgate_4594188/StarkgateRegistry.json");
 
 pub async fn deploy_starkgate_registry_behind_unsafe_proxy(
     client: Arc<LocalWalletSignerMiddleware>,

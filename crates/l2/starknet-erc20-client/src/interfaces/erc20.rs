@@ -11,7 +11,7 @@ use utils::errors::Error;
 
 abigen!(
     ERC20Token,
-    "../../../artifacts/starkgate-contracts/ERC20.json",
+    "../../../build_artifacts/starkgate_4594188/ERC20.json",
 );
 
 #[async_trait]

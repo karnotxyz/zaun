@@ -8,7 +8,7 @@ use utils::errors::Error;
 
 abigen!(
     StarknetCoreContract,
-    "../../../artifacts/cairo-lang/Starknet.json",
+    "../../../build_artifacts/cairo_lang/Starknet.json",
 );
 
 #[async_trait]

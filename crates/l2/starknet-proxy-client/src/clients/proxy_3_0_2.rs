@@ -8,7 +8,7 @@ use utils::errors::Error;
 
 abigen!(
     ProxySupport3_0_2,
-    "../../../artifacts/starkgate-contracts-0.9/Proxy_3_0_2.json",
+    "../../../build_artifacts/starkgate_c08863a/Proxy_3_0_2.json"
 );
 
 #[async_trait]

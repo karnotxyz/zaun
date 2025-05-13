@@ -7,9 +7,10 @@ use utils::{LocalWalletSignerMiddleware, NO_CONSTRUCTOR_ARG};
 pub mod clients;
 pub mod interfaces;
 
-const STARKNET_CORE_CONTRACT: &str = include_str!("../../../../artifacts/cairo-lang/Starknet.json");
+const STARKNET_CORE_CONTRACT: &str =
+    include_str!("../../../../build_artifacts/cairo_lang/Starknet.json");
 const STARKNET_DEV_CORE_CONTRACT: &str =
-    include_str!("../../../../artifacts/StarknetDevCoreContract.json");
+    include_str!("../../../../build_artifacts/local_contracts/StarknetDevCoreContract.json");
 
 pub enum CoreContractType {
     // custom contract written for testing (contains override function)

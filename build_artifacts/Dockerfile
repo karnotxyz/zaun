@@ -135,10 +135,10 @@ FROM builder AS local-contracts
 WORKDIR local-contracts
 
 COPY src src
-COPY foundry.toml .
+COPY foundry.toml remappings.txt .
 
-RUN mkdir build-artifacts && \
-    cd build-artifacts && \
+RUN mkdir -p build_artifacts/lib && \
+    cd build_artifacts/lib && \
     git clone https://github.com/starkware-libs/cairo-lang.git && \
     cd cairo-lang && \
     git checkout v0.13.3

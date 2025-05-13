@@ -1,4 +1,4 @@
-> _This file contains pre-compiled binaries for each smart contract `zaun` uses_.
+> _This file contains pre-compiled binaries for all the smart contract which `zaun` uses_.
 
 ## Compile from source
 
@@ -9,3 +9,10 @@ environment. To build from scratch, simply run:
 ```bash
 make artifacts
 ```
+
+> [!CAUTION]
+> This will **delete** all existing build artifacts!
+
+This will pull the repositories for all external contracts, download and
+configure external dependencies and versions, compile each contract and copy
+the resulting binaries into this folder.

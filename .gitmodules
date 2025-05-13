@@ -1,9 +1,0 @@
-[submodule "lib/forge-std"]
-	path = lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "lib/starknet-token"]
-	path = lib/starknet-token
-	url = https://github.com/starknet-io/starknet-token.git
-[submodule "lib/piltover"]
-	path = lib/piltover
-	url = https://github.com/keep-starknet-strange/piltover

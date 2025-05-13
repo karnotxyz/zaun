@@ -120,7 +120,9 @@ COPY foundry.toml .
 
 RUN mkdir build-artifacts && \
     cd build-artifacts && \
-    git clone https://github.com/starkware-libs/cairo-lang.git
+    git clone https://github.com/starkware-libs/cairo-lang.git && \
+    cd cairo-lang && \
+    git checkout v0.13.3
 
 # Build
 RUN forge build

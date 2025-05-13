@@ -10,6 +10,10 @@ RUN apt-get -y update && apt-get install -y \
   curl \
   git
 
+RUN curl -L https://foundry.paradigm.xyz | bash 
+ENV PATH="$PATH:/root/.foundry/bin"
+RUN foundryup
+
 # =========================================================================== #
 #                         STARKGATE CONTRACTS (4594188)                       #
 # =========================================================================== #
@@ -77,11 +81,6 @@ FROM builder AS starkgate-82e651f
 ENV STARKGATE_REV="82e651f5f642508577b6310f47d0d457f5f9a9bb"
 ENV STARKGATE_DIR="/contracts/starkgate-contracts"
 
-# External dependencies
-RUN curl -L https://foundry.paradigm.xyz | bash 
-ENV PATH="$PATH:/root/.foundry/bin"
-RUN foundryup
-
 # Clone repository
 RUN git clone https://github.com/starknet-io/starkgate-contracts.git
 WORKDIR starkgate-contracts
@@ -89,7 +88,7 @@ RUN git checkout $STARKGATE_REV
 
 # Build
 WORKDIR src/starkware
-COPY foundry-starkgate.toml foundry.toml
+COPY build-artifacts/foundry-starkgate.toml foundry.toml
 RUN forge build
 
 # =========================================================================== #
@@ -100,18 +99,30 @@ FROM builder as cairo-lang
 ENV CAIRO_LANG_REV="8e11b8cc65ae1d0959328b1b4a40b92df8b58595"
 ENV CAIRO_LANG_DIR="/contracts/cairo-lang"
 
-# External dependencies
-RUN curl -L https://foundry.paradigm.xyz | bash 
-ENV PATH="$PATH:/root/.foundry/bin"
-RUN foundryup
-
 # Clone the repo
 RUN git clone https://github.com/starkware-libs/cairo-lang.git
 WORKDIR cairo-lang
 RUN git checkout $CAIRO_LANG_REV
 
 # Build
-COPY foundry-cairo-lang.toml foundry.toml
+COPY build-artifacts/foundry-cairo-lang.toml foundry.toml
+RUN forge build
+
+# =========================================================================== #
+#                               LOCAL CONTRACTS                               #
+# =========================================================================== #
+
+FROM builder AS local-contracts
+WORKDIR local-contracts
+
+COPY src src
+COPY foundry.toml .
+
+RUN mkdir build-artifacts && \
+    cd build-artifacts && \
+    git clone https://github.com/starkware-libs/cairo-lang.git
+
+# Build
 RUN forge build
 
 # =========================================================================== #
@@ -152,3 +163,11 @@ WORKDIR ../cairo_lang
 ENV CAIRO_LANG_DIR="/contracts/cairo-lang"
 
 COPY --from=cairo-lang $CAIRO_LANG_DIR/out/Starknet.sol/Starknet.json Starknet.json
+
+WORKDIR ../local-contracts
+
+ENV LOCAL_CONTRACTS_DIR="/contracts/local-contracts"
+ENV ARTIFACTS_LOCAL="$LOCAL_CONTRACTS_DIR/out"
+
+COPY --from=local-contracts $ARTIFACTS_LOCAL/StarknetDevCoreContract.sol/Starknet.json .
+COPY --from=local-contracts $ARTIFACTS_LOCAL/UnsafeProxy.sol/UnsafeProxy.json .

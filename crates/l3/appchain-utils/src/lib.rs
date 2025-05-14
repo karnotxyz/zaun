@@ -3,11 +3,11 @@ pub mod errors;
 use std::sync::Arc;
 
 use color_eyre::{eyre::eyre, Result};
-use starknet_accounts::{Account, AccountError, Call, ExecutionV1, SingleOwnerAccount};
+use starknet_accounts::{Account, AccountError, ExecutionV1, SingleOwnerAccount};
 use starknet_contract::ContractFactory;
 use starknet_core::types::contract::{CompiledClass, SierraClass};
 use starknet_core::types::StarknetError;
-use starknet_core::types::{BlockId, BlockTag, Felt, FunctionCall, InvokeTransactionResult};
+use starknet_core::types::{BlockId, BlockTag, Call, Felt, FunctionCall, InvokeTransactionResult};
 use starknet_core::utils::get_selector_from_name;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::{HttpTransport, JsonRpcClient};

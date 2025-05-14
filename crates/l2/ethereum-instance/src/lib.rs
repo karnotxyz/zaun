@@ -152,7 +152,6 @@ pub async fn deploy_contract<T: Tokenize>(
     Ok(factory
         .deploy(contructor_args)
         .map_err(Into::<ContractError<LocalWalletSignerMiddleware>>::into)?
-        .confirmations(2_usize)
         .send()
         .await
         .map_err(Into::<ContractError<LocalWalletSignerMiddleware>>::into)?)

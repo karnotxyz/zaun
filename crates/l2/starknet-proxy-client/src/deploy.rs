@@ -29,11 +29,12 @@ pub enum Error {
     DeployContract(#[from] ethereum_instance::Error),
 }
 
-const UNSAFE_PROXY: &str = include_str!("../../../../artifacts/UnsafeProxy.json");
+const UNSAFE_PROXY: &str =
+    include_str!("../../../../build_artifacts/local_contracts/UnsafeProxy.json");
 const SAFE_PROXY_3_0_2: &str =
-    include_str!("../../../../artifacts/starkgate-contracts-0.9/Proxy_3_0_2.json");
+    include_str!("../../../../build_artifacts/starkgate_c08863a/Proxy_3_0_2.json");
 const SAFE_PROXY_5_0_0: &str =
-    include_str!("../../../../artifacts/starkgate-contracts/Proxy_5_0_0.json");
+    include_str!("../../../../build_artifacts/starkgate_4594188/Proxy_5_0_0.json");
 
 #[derive(PartialEq)]
 pub enum ProxyVersion {

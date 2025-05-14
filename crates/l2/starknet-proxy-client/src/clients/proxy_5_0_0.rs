@@ -1,14 +1,14 @@
 use crate::interfaces::proxy::{ProxyInitializeData, ProxySupport5_0_0Trait};
 use async_trait::async_trait;
 use ethers::addressbook::Address;
-use ethers::contract::{abigen, ContractError};
+use ethers::contract::abigen;
 use ethers::middleware::Middleware;
 use ethers::prelude::{Bytes, TransactionReceipt};
 use utils::errors::Error;
 
 abigen!(
     ProxySupport5_0_0,
-    "../../../artifacts/starkgate-contracts/Proxy_5_0_0.json",
+    "../../../build_artifacts/starkgate_4594188/Proxy_5_0_0.json"
 );
 
 #[async_trait]
@@ -20,8 +20,7 @@ where
         self.as_ref()
             .initialize(data)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -42,8 +41,7 @@ where
         self.as_ref()
             .upgrade_to(implementation_address, data, finalized)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -57,8 +55,7 @@ where
         self.as_ref()
             .add_implementation(implementation_address, data, finalized)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -70,8 +67,7 @@ where
         self.as_ref()
             .register_app_governor(new_governor)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -83,8 +79,7 @@ where
         self.as_ref()
             .revoke_app_governor(governor)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -96,8 +91,7 @@ where
         self.as_ref()
             .register_app_governor(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -109,8 +103,7 @@ where
         self.as_ref()
             .register_app_role_admin(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -122,8 +115,7 @@ where
         self.as_ref()
             .register_governance_admin(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -135,8 +127,7 @@ where
         self.as_ref()
             .register_operator(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -148,8 +139,7 @@ where
         self.as_ref()
             .register_security_admin(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -161,8 +151,7 @@ where
         self.as_ref()
             .register_security_agent(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -174,8 +163,7 @@ where
         self.as_ref()
             .register_token_admin(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -187,8 +175,7 @@ where
         self.as_ref()
             .register_upgrade_governor(account)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

@@ -97,7 +97,7 @@ pub async fn call_contract(
 }
 
 pub async fn deploy_contract(
-    signer: &LocalWalletSignerMiddleware,
+    signer: &'_ LocalWalletSignerMiddleware,
     path_to_sierra: &Path,
     path_to_casm: &Path,
     constructor_args: Vec<Felt>,

@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use ethers::{
-    contract::ContractError,
     prelude::abigen,
     providers::Middleware,
     types::{TransactionReceipt, H160},
@@ -12,7 +11,7 @@ type Address = H160;
 
 abigen!(
     StarkgateRegistry,
-    "../../../artifacts/starkgate-contracts/StarkgateRegistry.json",
+    "../../../build_artifacts/starkgate_4594188/StarkgateRegistry.json",
 );
 
 #[async_trait]
@@ -41,8 +40,7 @@ where
         self.as_ref()
             .enlist_token(token, bridge)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -51,8 +49,7 @@ where
         self.as_ref()
             .block_token(token)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -61,8 +58,7 @@ where
         self.as_ref()
             .self_remove(token)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

@@ -60,7 +60,6 @@ impl EthereumClient {
     ) -> Result<Self, Error> {
         let rpc_endpoint = rpc_endpoint.unwrap_or_else(|| {
             std::env::var("ETH_RPC_ENDPOINT")
-                .map(Into::into)
                 .ok()
                 .unwrap_or_else(|| ANVIL_DEFAULT_ENDPOINT.into())
         });

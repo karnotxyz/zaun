@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use ethers::{
-    contract::ContractError,
     prelude::abigen,
     providers::Middleware,
     types::{TransactionReceipt, H160, U256},
@@ -12,7 +11,7 @@ type Address = H160;
 
 abigen!(
     StarknetTokenBridge,
-    "../../../artifacts/starkgate-contracts/StarknetTokenBridge.json",
+    "../../../build_artifacts/starkgate_4594188/StarknetTokenBridge.json",
 );
 
 #[async_trait]
@@ -74,8 +73,7 @@ where
             .deposit(token, amount, l2_recipient)
             .value(fee)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -89,8 +87,7 @@ where
         self.as_ref()
             .withdraw(token, amount)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -102,8 +99,7 @@ where
         self.as_ref()
             .set_l2_token_bridge(l2_token_bridge)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -115,8 +111,7 @@ where
         self.as_ref()
             .enable_withdrawal_limit(token)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -128,8 +123,7 @@ where
         self.as_ref()
             .disable_withdrawal_limit(token)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -142,8 +136,7 @@ where
         self.as_ref()
             .set_max_total_balance(token, max_total_balance)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

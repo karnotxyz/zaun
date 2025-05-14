@@ -8,7 +8,8 @@ use utils::{LocalWalletSignerMiddleware, NO_CONSTRUCTOR_ARG};
 pub mod clients;
 pub mod interfaces;
 
-const ERC20_TEST_TOKEN: &str = include_str!("../../../../artifacts/starkgate-contracts/ERC20.json");
+const ERC20_TEST_TOKEN: &str =
+    include_str!("../../../../build_artifacts/starkgate_4594188/ERC20.json");
 
 pub async fn deploy_dai_test_erc20_behind_unsafe_proxy(
     client: Arc<LocalWalletSignerMiddleware>,

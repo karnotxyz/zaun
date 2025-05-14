@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use ethers::{
-    contract::ContractError,
     prelude::abigen,
     providers::Middleware,
     types::{TransactionReceipt, H160, U256},
@@ -12,7 +11,7 @@ type Address = H160;
 
 abigen!(
     StarkgateManager,
-    "../../../artifacts/starkgate-contracts/StarkgateManager.json",
+    "../../../build_artifacts/starkgate_4594188/StarkgateManager.json",
 );
 
 #[async_trait]
@@ -49,8 +48,7 @@ where
         self.as_ref()
             .add_existing_bridge(token, bridge)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -62,8 +60,7 @@ where
         self.as_ref()
             .deactivate_token(token)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -72,8 +69,7 @@ where
         self.as_ref()
             .block_token(token)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -87,8 +83,7 @@ where
             .enroll_token_bridge(token)
             .value(fee)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

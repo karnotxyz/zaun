@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use ethers::contract::ContractError;
 use ethers::prelude::TransactionReceipt;
 use ethers::{
     prelude::abigen,
@@ -11,7 +10,7 @@ use utils::errors::Error;
 
 abigen!(
     ERC20Token,
-    "../../../artifacts/starkgate-contracts/ERC20.json",
+    "../../../build_artifacts/starkgate_4594188/ERC20.json",
 );
 
 #[async_trait]
@@ -66,8 +65,7 @@ where
             .as_ref()
             .approve(address, value)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into);
 

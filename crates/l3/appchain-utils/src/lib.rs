@@ -3,14 +3,16 @@ pub mod errors;
 use std::sync::Arc;
 
 use color_eyre::{eyre::eyre, Result};
-use starknet_accounts::{Account, Call, ExecutionV1, SingleOwnerAccount};
+use starknet_accounts::{Account, AccountError, Call, ExecutionV1, SingleOwnerAccount};
 use starknet_contract::ContractFactory;
 use starknet_core::types::contract::{CompiledClass, SierraClass};
+use starknet_core::types::StarknetError;
 use starknet_core::types::{BlockId, BlockTag, Felt, FunctionCall, InvokeTransactionResult};
 use starknet_core::utils::get_selector_from_name;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet_providers::Provider;
+use starknet_providers::ProviderError;
 use starknet_signers::LocalWallet;
 use std::path::Path;
 
@@ -23,7 +25,7 @@ pub type TransactionExecution<'a> = ExecutionV1<'a, RpcAccount<'a>>;
 pub const NO_CONSTRUCTOR_ARG: Vec<Felt> = Vec::new();
 
 // Montgomery representation for value 0x1000000000000
-pub const MAX_FEE: Felt = Felt::from_hex_unchecked("0x1000000000");
+pub const MAX_FEE: Felt = Felt::from_hex_unchecked("0x2000000000000");
 
 pub trait StarknetContractClient {
     fn address(&self) -> FieldElement;
@@ -48,7 +50,31 @@ pub async fn invoke_contract(
         .max_fee(MAX_FEE)
         .send()
         .await
-        .map_err(|e| eyre!("Failed to send transaction: {}", e))
+        .map_err(|account_error| match account_error {
+            AccountError::Provider(provider_error) => match provider_error {
+                ProviderError::StarknetError(stark_err) => match stark_err {
+                    StarknetError::ValidationFailure(details) => {
+                        eyre!("Validation failure: {}", details)
+                    }
+                    StarknetError::TransactionExecutionError(data) => {
+                        eyre!("Transaction execution error: {:?}", data)
+                    }
+                    StarknetError::ContractError(data) => {
+                        eyre!("Contract error: {:?}", data)
+                    }
+                    _ => eyre!("Starknet error: {} ({})", stark_err.message(), stark_err),
+                },
+                ProviderError::RateLimited => eyre!("Request rate limited"),
+                ProviderError::ArrayLengthMismatch => eyre!("Array length mismatch"),
+                ProviderError::Other(err) => eyre!("Provider error: {}", err),
+            },
+            AccountError::Signing(err) => eyre!("Signing error: {:?}", err),
+            AccountError::ClassHashCalculation(err) => {
+                eyre!("Class hash calculation error: {}", err)
+            }
+            AccountError::ClassCompression(err) => eyre!("Class compression error: {}", err),
+            AccountError::FeeOutOfRange => eyre!("Fee calculation overflow"),
+        })
 }
 
 pub async fn call_contract(
@@ -70,8 +96,8 @@ pub async fn call_contract(
         .map_err(|e| eyre!("Provider error: {}", e))
 }
 
-pub async fn deploy_contract<'a>(
-    signer: &'a LocalWalletSignerMiddleware,
+pub async fn deploy_contract(
+    signer: &LocalWalletSignerMiddleware,
     path_to_sierra: &Path,
     path_to_casm: &Path,
     constructor_args: Vec<Felt>,

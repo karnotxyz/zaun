@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 use ethers::prelude::H160;
 use ethers::{
-    contract::ContractError,
     prelude::abigen,
     providers::Middleware,
     types::{TransactionReceipt, U256},
@@ -56,8 +55,7 @@ where
         self.as_ref()
             .set_max_total_balance(max_total_balance)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -69,8 +67,7 @@ where
         self.as_ref()
             .set_max_deposit(max_deposit)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -82,8 +79,7 @@ where
         self.as_ref()
             .set_l2_token_bridge(l2_token_bridge)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -98,8 +94,7 @@ where
             .deposit_with_amount(amount, l2_recipient)
             .value(fee)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -112,8 +107,7 @@ where
         self.as_ref()
             .withdraw_with_recipient(amount, l1_recipient)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use ethers::{
-    contract::ContractError,
     prelude::abigen,
     providers::Middleware,
     types::{Address, TransactionReceipt},
@@ -42,8 +41,7 @@ where
         self.as_ref()
             .register_operator(new_operator)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -54,8 +52,7 @@ where
         self.as_ref()
             .unregister_operator(removed_operator)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

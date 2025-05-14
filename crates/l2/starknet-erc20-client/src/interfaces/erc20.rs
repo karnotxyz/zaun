@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use ethers::contract::ContractError;
 use ethers::prelude::TransactionReceipt;
 use ethers::{
     prelude::abigen,
@@ -66,8 +65,7 @@ where
             .as_ref()
             .approve(address, value)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into);
 

@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use ethers::{
-    contract::ContractError,
     prelude::abigen,
     providers::Middleware,
     types::{TransactionReceipt, U256},
@@ -98,8 +97,7 @@ where
             .send_message_to_l2(to_address, selector, payload)
             .value(fee) // L1 message fee must be between 0 and 1 ether
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -114,8 +112,7 @@ where
         self.as_ref()
             .start_l1_to_l2_message_cancellation(to_address, selector, payload, nonce)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -130,8 +127,7 @@ where
         self.as_ref()
             .cancel_l1_to_l2_message(to_address, selector, payload, nonce)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

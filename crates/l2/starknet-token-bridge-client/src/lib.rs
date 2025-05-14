@@ -8,7 +8,7 @@ pub mod clients;
 pub mod interfaces;
 
 const STARKNET_TOKEN_BRIDGE: &str =
-    include_str!("../../../../artifacts/starkgate-contracts/StarknetTokenBridge.json");
+    include_str!("../../../../build_artifacts/starkgate_4594188/StarknetTokenBridge.json");
 
 pub async fn deploy_starknet_token_bridge_behind_unsafe_proxy(
     client: Arc<LocalWalletSignerMiddleware>,

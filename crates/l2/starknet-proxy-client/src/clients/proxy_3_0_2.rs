@@ -1,14 +1,14 @@
 use crate::interfaces::proxy::{ProxyInitializeData, ProxySupport3_0_2Trait};
 use async_trait::async_trait;
 use ethers::addressbook::Address;
-use ethers::contract::{abigen, ContractError};
+use ethers::contract::abigen;
 use ethers::middleware::Middleware;
 use ethers::prelude::{Bytes, TransactionReceipt};
 use utils::errors::Error;
 
 abigen!(
     ProxySupport3_0_2,
-    "../../../artifacts/starkgate-contracts-0.9/Proxy_3_0_2.json",
+    "../../../build_artifacts/starkgate_c08863a/Proxy_3_0_2.json"
 );
 
 #[async_trait]
@@ -20,8 +20,7 @@ where
         self.as_ref()
             .initialize(data)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -42,8 +41,7 @@ where
         self.as_ref()
             .upgrade_to(implementation_address, data, finalized)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -57,8 +55,7 @@ where
         self.as_ref()
             .add_implementation(implementation_address, data, finalized)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -70,8 +67,7 @@ where
         self.as_ref()
             .proxy_nominate_new_governor(new_governor)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -83,8 +79,7 @@ where
         self.as_ref()
             .proxy_remove_governor(governor)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -93,8 +88,7 @@ where
         self.as_ref()
             .proxy_accept_governance()
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

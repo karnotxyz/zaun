@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use ethers::contract::ContractError;
 use ethers::middleware::Middleware;
 use ethers::prelude::abigen;
 use ethers::types::{Bytes, TransactionReceipt, I256, U256};
@@ -9,7 +8,7 @@ use utils::errors::Error;
 
 abigen!(
     StarknetDevCoreContract,
-    "../../../artifacts/StarknetDevCoreContract.json",
+    "../../../build_artifacts/local_contracts/StarknetDevCoreContract.json",
 );
 
 pub struct DevCoreContract<M: Middleware>(pub StarknetDevCoreContract<M>);
@@ -25,8 +24,7 @@ impl<M: Middleware> DevCoreContract<M> {
         self.0
             .update_state_override(global_root, block_number, block_hash)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -41,8 +39,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
         self.0
             .set_program_hash(new_program_hash)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -54,8 +51,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
         self.0
             .set_config_hash(new_config_hash)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -67,8 +63,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
         self.0
             .set_message_cancellation_delay(delay_in_seconds)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -106,8 +101,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
         self.0
             .update_state(program_output, onchain_data_hash, onchain_data_size)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -120,8 +114,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
         self.0
             .update_state_kzg_da(program_output, kzg_hashes)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

@@ -1,7 +1,5 @@
 use async_trait::async_trait;
-use ethers::{
-    contract::ContractError, prelude::abigen, providers::Middleware, types::TransactionReceipt,
-};
+use ethers::{prelude::abigen, providers::Middleware, types::TransactionReceipt};
 
 use utils::errors::Error;
 
@@ -36,8 +34,7 @@ where
         self.as_ref()
             .finalize()
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

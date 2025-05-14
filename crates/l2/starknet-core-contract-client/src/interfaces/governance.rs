@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use ethers::{
-    contract::ContractError,
     prelude::abigen,
     providers::Middleware,
     types::{TransactionReceipt, H160},
@@ -56,8 +55,7 @@ where
         self.as_ref()
             .starknet_nominate_new_governor(new_governor)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -69,8 +67,7 @@ where
         self.as_ref()
             .starknet_remove_governor(governor_for_removal)
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -79,8 +76,7 @@ where
         self.as_ref()
             .starknet_accept_governance()
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }
@@ -89,8 +85,7 @@ where
         self.as_ref()
             .starknet_cancel_nomination()
             .send()
-            .await
-            .map_err(Into::<ContractError<M>>::into)?
+            .await?
             .await
             .map_err(Into::into)
     }

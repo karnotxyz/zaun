@@ -132,16 +132,23 @@ RUN ./scarb/bin/scarb build
 # =========================================================================== #
 
 FROM builder AS local-contracts
+ENV CAIRO_LANG_REV="8e11b8cc65ae1d0959328b1b4a40b92df8b58595"
+ENV STARKNET_TOKEN_REV="ffdef4e66b0c02627cbed7629373019d4c1e137b"
+
 WORKDIR local-contracts
 
 COPY src src
 COPY foundry.toml remappings.txt .
 
-RUN mkdir -p build_artifacts/lib && \
-    cd build_artifacts/lib && \
+RUN mkdir -p lib
+RUN cd lib && \
     git clone https://github.com/starkware-libs/cairo-lang.git && \
     cd cairo-lang && \
-    git checkout v0.13.3
+    git checkout $CAIRO_LANG_REV
+RUN cd lib && \
+    git clone https://github.com/starknet-io/starknet-token.git && \
+    cd starknet-token && \
+    git checkout $STARKNET_TOKEN_REV
 
 # Build
 RUN forge build

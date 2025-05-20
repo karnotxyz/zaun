@@ -21,7 +21,6 @@ RUN foundryup
 FROM builder AS starkgate-4594188
 ENV STARKGATE_REV="45941888479663ac93e898cd7f8504fa9066c54c"
 ENV STARKGATE_DIR="/contracts/starkgate-contracts"
-ENV COMPILE_SIERRA=".downloads/cairo/bin/starknet-sierra-compile"
 
 # clone repository
 RUN git clone https://github.com/starknet-io/starkgate-contracts.git
@@ -33,10 +32,16 @@ RUN python3 -m venv venv
 ENV PATH="$STARKGATE_DIR/venv/bin:$PATH"
 RUN pip install -r requirements.txt
 
-# Download cairo and solc
-RUN scripts/setup.sh
+# build
+RUN scripts/setup.sh && scripts/build-solidity.sh
 
-RUN scripts/build-cairo.sh && scripts/build-solidity.sh
+COPY build_artifacts/foundry-starkgate-4594188.toml starkware/solidity/foundry.toml
+COPY build_artifacts/ERC20.sol starkware/solidity/tokens/ERC20/ERC20_1.sol
+RUN cd starkware/solidity && forge build
+
+# Extract
+COPY build_artifacts/convert.py .
+RUN python3 convert.py
 
 # =========================================================================== #
 #                         STARKGATE CONTRACTS (c08863a)                       #
@@ -44,6 +49,8 @@ RUN scripts/build-cairo.sh && scripts/build-solidity.sh
 
 FROM ciimage/python:3.7 AS starkgate-c08863a
 ENV STARKGATE_REV="c08863a1f08226c09f1d0748124192e848d73db9"
+ENV SOLC_VERSION="0.6.12"
+ENV SOLC_URL="https://binaries.soliditylang.org/linux-amd64/solc-linux-amd64-v$SOLC_VERSION+commit.27d51765"
 
 WORKDIR /contracts
 
@@ -65,13 +72,16 @@ WORKDIR starkgate-contracts
 RUN git checkout $STARKGATE_REV
 
 # Install solc and ganache
-RUN curl https://binaries.soliditylang.org/linux-amd64/solc-linux-amd64-v0.6.12+commit.27d51765 -o /usr/local/bin/solc-0.6.12
-RUN echo 'f6cb519b01dabc61cab4c184a3db11aa591d18151e362fcae850e42cffdfb09a /usr/local/bin/solc-0.6.12' | sha256sum --check
-RUN chmod +x /usr/local/bin/solc-0.6.12
+RUN curl $SOLC_URL -o /usr/local/bin/solc-$SOLC_VERSION
+RUN chmod +x /usr/local/bin/solc-$SOLC_VERSION
 RUN npm install -g --unsafe-perm ganache-cli@6.12.2
 
 # Build.
 RUN ./build.sh
+
+# Extract
+COPY build_artifacts/convert.py .
+RUN python3 convert.py
 
 # =========================================================================== #
 #                         STARKGATE CONTRACTS (82e651f)                       #
@@ -87,8 +97,12 @@ RUN git checkout $STARKGATE_REV
 
 # Build
 WORKDIR src/starkware
-COPY build_artifacts/foundry-starkgate.toml foundry.toml
+COPY build_artifacts/foundry-starkgate-82e651f.toml foundry.toml
 RUN forge build
+
+# Extract
+COPY build_artifacts/convert.py .
+RUN python3 convert.py
 
 # =========================================================================== #
 #                                   CAIRO-LANG                                #
@@ -105,6 +119,11 @@ RUN git checkout $CAIRO_LANG_REV
 # Build
 COPY build_artifacts/foundry-cairo-lang.toml foundry.toml
 RUN forge build
+
+# Extract
+WORKDIR out
+COPY build_artifacts/convert.py .
+RUN python3 convert.py
 
 # =========================================================================== #
 #                                  PILTOVER                                   #
@@ -126,6 +145,10 @@ RUN mkdir scarb && wget -c $SCARB_URL -O - | tar -xz -C scarb --strip-components
 
 # Build
 RUN ./scarb/bin/scarb build
+
+# Extract
+COPY build_artifacts/convert.py .
+RUN python3 convert.py
 
 # =========================================================================== #
 #                               LOCAL CONTRACTS                               #
@@ -150,8 +173,13 @@ RUN cd lib && \
     cd starknet-token && \
     git checkout $STARKNET_TOKEN_REV
 
-# Build
+# Buld
 RUN forge build
+
+# Extract
+WORKDIR out
+COPY build_artifacts/convert.py .
+RUN python3 convert.py
 
 # =========================================================================== #
 #                                  ARTIFACTS                                  #
@@ -163,14 +191,13 @@ WORKDIR artifacts
 WORKDIR starkgate_4594188
 
 ENV STARKGATE_DIR="/contracts/starkgate-contracts"
-ENV ARTIFACTS_CAIRO_4594188="$STARKGATE_DIR/cairo_contracts"
 ENV ARTIFACTS_SOLID_4594188="$STARKGATE_DIR/artifacts"
 
 COPY --from=starkgate-4594188 $ARTIFACTS_SOLID_4594188/StarkgateManager.json StarkgateManager.json
 COPY --from=starkgate-4594188 $ARTIFACTS_SOLID_4594188/StarkgateRegistry.json StarkgateRegistry.json
 COPY --from=starkgate-4594188 $ARTIFACTS_SOLID_4594188/Proxy.json Proxy_5_0_0.json
 COPY --from=starkgate-4594188 $ARTIFACTS_SOLID_4594188/StarknetTokenBridge.json StarknetTokenBridge.json
-COPY --from=starkgate-4594188 $ARTIFACTS_SOLID_4594188/TestERC20.json ERC20.json
+COPY --from=starkgate-4594188 $STARKGATE_DIR/starkware/solidity/out/ERC20_1.sol/ERC20_1.json ERC20.json
 
 WORKDIR ../starkgate_c08863a
 
@@ -189,8 +216,9 @@ COPY --from=starkgate-82e651f $ARTIFACTS_SOLID_82e651f/StarknetEthBridge.sol/Sta
 WORKDIR ../cairo_lang
 
 ENV CAIRO_LANG_DIR="/contracts/cairo-lang"
+ENV ARTIFACTS_CAIRO_LANG="$CAIRO_LANG_DIR/out"
 
-COPY --from=cairo-lang $CAIRO_LANG_DIR/out/Starknet.sol/Starknet.json Starknet.json
+COPY --from=cairo-lang $ARTIFACTS_CAIRO_LANG/Starknet.sol/Starknet.json Starknet.json
 
 WORKDIR ../local_contracts
 

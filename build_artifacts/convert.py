@@ -6,6 +6,9 @@ def edit_json_file(filepath):
     with open(filepath, "r") as f:
         data = json.load(f)
 
+    if not isinstance(data, dict):
+        return
+
     if isinstance(data.get("bytecode"), str):
         data["bytecode"] = {"object": data["bytecode"]}
 
@@ -14,7 +17,7 @@ def edit_json_file(filepath):
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-artifacts_dir = os.path.join(script_dir, "..", "build_artifacts")
+artifacts_dir = os.path.join(script_dir)
 
 for root, dirs, files in os.walk(artifacts_dir):
     for filename in files:

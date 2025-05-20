@@ -1,3 +1,67 @@
+# =========================================================================== #
+#                               PLEASE READ THIS                              #
+#                                                                             #
+# The build system for this repo is an absolute mess, with many external      #
+# dependencies, each scattered across different versions, but it WORKS.       #
+#                                                                             #
+# Here are a few things you should NOT do:                                    #
+#                                                                             #
+# - Commiting artifacts to vcs is impractical and not flexible at all, what   #
+#   if we want to update versions? We should add this as submodules instead   #
+#   and just build from source each time!                                     #
+#                                                                             #
+# Don't. First of all submodules are a pain to work with. Second of all this  #
+# adds many external dependencies aside from `cargo` to build this crate.     #
+# This is especially bad when this crate is imported into another project,    #
+# since cargo will fail the build if all required dependencies are not        #
+# installed globally. IE: your Rust project is now a Python project and a     #
+# Solidity project, and a Cairo project... this is a pain to work with.       #
+#                                                                             #
+# - This Dockerfile is a mess, I should refactor it!                          #
+#                                                                             #
+# Don't. This file is a mess because building all the required dependencies,  #
+# sometimes event the same dependency across multiple versions and multiple   #
+# build systems, is a mess. It really isn't worth trying to refactor this so  #
+# long as it works.                                                           #
+#                                                                             #
+# - I really need some new functionality. We should update the dependencies.  #
+#                                                                             #
+# Don't (if you can). You might be lucky and the build scripts for the new    #
+# version will not have changed. Otherwise keep in mind that you will have to #
+# track down build scripts across multiple repos, debug missing dependencies  #
+# and file for the coming days to get everything to work. If you do REALLY    #
+# need to update the dependencies, here are a few tips which might help you:  #
+#                                                                             #
+# 1. Don't try and guess how each project is built, and don't just assume the #
+#    current commands will work. Check out each dep at the updated rev, read  #
+#    their build scripts and inline them into this file.                      #
+#                                                                             #
+# 2. Use `docker build ... --progresss plain`. This will print out all the    #
+#    commands which are run as the image is being built and allow you to use  #
+#    `RUN echo` and `RUN ls` for debug statments without them being erased.   #
+#                                                                             #
+# 3. Docker likes to cache build steps. This means that your `RUN echo`       #
+#    statements and the like will only be run on their first build. You can   #
+#    run `docker build ... --no-cache` but this will rebuild the entire image.#
+#    Otherwise, you can force a cache invalidation by just adding an          #
+#    `ENV foo=bazz` above the statement which you want to re-run.             #
+#                                                                             #
+# 4. THIS REPO DOES NOT HAVE ANY UNIT TESTS. You should not rely on cargo test#
+#    to check if you're change haven't broken the artifacts. Madara           #
+#                                                                             #
+#                  https://github.com/madara-alliance/madara                  #
+#                                                                             #
+#    has some test in its bootstrapper code which uses zaun in an e2e context.#
+#    Update the deps there to point to your fixes, run the tests and make sure#
+#    they pass. If that is the case you should be good.                       #
+#                                                                             #
+# 5. REMEMBER TO COMMIT THE NEWLY GENERATED ARTIFACTS TO VCS. There is nothing#
+#    in the CI which enforces that changes to the build Dockerfile should     #
+#    coincide with changes to the artifacts. This is something you need to    #
+#    remember to do manually.                                                 #
+#                                                                             #
+# =========================================================================== #
+
 FROM debian:bookworm AS builder
 WORKDIR /contracts
 

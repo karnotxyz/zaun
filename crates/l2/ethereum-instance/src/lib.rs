@@ -148,5 +148,9 @@ pub async fn deploy_contract<T: Tokenize>(
 
     let factory = ContractFactory::new(abi, bytecode, client.clone());
 
-    Ok(factory.deploy(contructor_args)?.send().await?)
+    Ok(factory
+        .deploy(contructor_args)?
+        .confirmations(2_usize)
+        .send()
+        .await?)
 }

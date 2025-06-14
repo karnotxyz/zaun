@@ -56,6 +56,7 @@ where
             .set_max_total_balance(max_total_balance)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -68,6 +69,7 @@ where
             .set_max_deposit(max_deposit)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -80,6 +82,7 @@ where
             .set_l2_token_bridge(l2_token_bridge)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -95,6 +98,7 @@ where
             .value(fee)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -108,6 +112,7 @@ where
             .withdraw_with_recipient(amount, l1_recipient)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

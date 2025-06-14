@@ -110,7 +110,7 @@ where
             .register_app_role_admin(account)
             .send()
             .await?
-            .confirmations(3)
+            .confirmations(6)
             .await
             .map_err(Into::into)
     }

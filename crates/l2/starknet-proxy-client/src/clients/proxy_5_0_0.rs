@@ -5,6 +5,7 @@ use ethers::contract::abigen;
 use ethers::middleware::Middleware;
 use ethers::prelude::{Bytes, TransactionReceipt};
 use utils::errors::Error;
+use std::time::Duration;
 
 abigen!(
     ProxySupport5_0_0,
@@ -110,7 +111,8 @@ where
             .register_app_role_admin(account)
             .send()
             .await?
-            .confirmations(6)
+            .interval(Duration::from_secs(2))
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -149,6 +151,7 @@ where
             .register_security_admin(account)
             .send()
             .await?
+            .interval(Duration::from_secs(2))
             .confirmations(2)
             .await
             .map_err(Into::into)

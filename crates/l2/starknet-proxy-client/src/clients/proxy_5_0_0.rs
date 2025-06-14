@@ -21,6 +21,7 @@ where
             .initialize(data)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -42,6 +43,7 @@ where
             .upgrade_to(implementation_address, data, finalized)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -56,6 +58,7 @@ where
             .add_implementation(implementation_address, data, finalized)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -68,6 +71,7 @@ where
             .register_app_governor(new_governor)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -80,6 +84,7 @@ where
             .revoke_app_governor(governor)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -92,6 +97,7 @@ where
             .register_app_governor(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -104,6 +110,7 @@ where
             .register_app_role_admin(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -116,6 +123,7 @@ where
             .register_governance_admin(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -128,6 +136,7 @@ where
             .register_operator(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -140,6 +149,7 @@ where
             .register_security_admin(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -152,6 +162,7 @@ where
             .register_security_agent(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -164,6 +175,7 @@ where
             .register_token_admin(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -176,6 +188,7 @@ where
             .register_upgrade_governor(account)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

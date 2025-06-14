@@ -58,7 +58,7 @@ where
             .add_implementation(implementation_address, data, finalized)
             .send()
             .await?
-            .confirmations(2)
+            .confirmations(3)
             .await
             .map_err(Into::into)
     }
@@ -110,7 +110,7 @@ where
             .register_app_role_admin(account)
             .send()
             .await?
-            .confirmations(2)
+            .confirmations(3)
             .await
             .map_err(Into::into)
     }

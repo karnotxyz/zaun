@@ -4,8 +4,8 @@ use ethers::addressbook::Address;
 use ethers::contract::abigen;
 use ethers::middleware::Middleware;
 use ethers::prelude::{Bytes, TransactionReceipt};
-use utils::errors::Error;
 use std::time::Duration;
+use utils::errors::Error;
 
 abigen!(
     ProxySupport5_0_0,

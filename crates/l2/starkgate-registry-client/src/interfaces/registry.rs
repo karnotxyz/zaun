@@ -41,6 +41,7 @@ where
             .enlist_token(token, bridge)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -50,6 +51,7 @@ where
             .block_token(token)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -59,6 +61,7 @@ where
             .self_remove(token)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

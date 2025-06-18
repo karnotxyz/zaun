@@ -56,6 +56,7 @@ where
             .starknet_nominate_new_governor(new_governor)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -68,6 +69,7 @@ where
             .starknet_remove_governor(governor_for_removal)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -77,6 +79,7 @@ where
             .starknet_accept_governance()
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -86,6 +89,7 @@ where
             .starknet_cancel_nomination()
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

@@ -49,6 +49,7 @@ where
             .add_existing_bridge(token, bridge)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -61,6 +62,7 @@ where
             .deactivate_token(token)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -70,6 +72,7 @@ where
             .block_token(token)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

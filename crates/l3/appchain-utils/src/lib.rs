@@ -46,8 +46,9 @@ pub async fn invoke_contract(
         calldata,
     };
     signer
-        .execute_v1(vec![call])
-        .max_fee(MAX_FEE)
+        .execute_v3(vec![call])
+        .gas_estimate_multiplier(1.5)
+        // .max_fee(MAX_FEE)
         .send()
         .await
         .map_err(|account_error| match account_error {

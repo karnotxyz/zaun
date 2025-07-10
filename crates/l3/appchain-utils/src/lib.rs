@@ -48,8 +48,6 @@ pub async fn invoke_contract(
     signer
         .execute_v3(vec![call])
         .gas_estimate_multiplier(1.5)
-
-        // .max_fee(MAX_FEE)
         .send()
         .await
         .map_err(|account_error| match account_error {
@@ -76,7 +74,7 @@ pub async fn invoke_contract(
             AccountError::Signing(err) => eyre!("Signing error: {:?}", err),
             AccountError::ClassHashCalculation(err) => {
                 eyre!("Class hash calculation error: {}", err)
-            },
+            }
             AccountError::FeeOutOfRange => eyre!("Fee calculation overflow"),
         })
 }

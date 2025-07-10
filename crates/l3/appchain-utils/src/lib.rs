@@ -3,7 +3,7 @@ pub mod errors;
 use std::sync::Arc;
 
 use color_eyre::{eyre::eyre, Result};
-use starknet_accounts::{Account, AccountError, ExecutionV1, SingleOwnerAccount};
+use starknet_accounts::{Account, AccountError, ExecutionV3, SingleOwnerAccount};
 use starknet_contract::ContractFactory;
 use starknet_core::types::contract::{CompiledClass, SierraClass};
 use starknet_core::types::StarknetError;
@@ -20,7 +20,7 @@ pub type LocalWalletSignerMiddleware =
     Arc<SingleOwnerAccount<Arc<JsonRpcClient<HttpTransport>>, LocalWallet>>;
 
 type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;
-pub type TransactionExecution<'a> = ExecutionV1<'a, RpcAccount<'a>>;
+pub type TransactionExecution<'a> = ExecutionV3<'a, RpcAccount<'a>>;
 
 pub const NO_CONSTRUCTOR_ARG: Vec<Felt> = Vec::new();
 
@@ -46,8 +46,7 @@ pub async fn invoke_contract(
         calldata,
     };
     signer
-        .execute_v1(vec![call])
-        .max_fee(MAX_FEE)
+        .execute_v3(vec![call])
         .send()
         .await
         .map_err(|account_error| match account_error {
@@ -62,6 +61,9 @@ pub async fn invoke_contract(
                     StarknetError::ContractError(data) => {
                         eyre!("Contract error: {:?}", data)
                     }
+                    StarknetError::UnexpectedError(data) => {
+                        eyre!("Invalid transaction: {:?}", data)
+                    }
                     _ => eyre!("Starknet error: {} ({})", stark_err.message(), stark_err),
                 },
                 ProviderError::RateLimited => eyre!("Request rate limited"),
@@ -72,7 +74,6 @@ pub async fn invoke_contract(
             AccountError::ClassHashCalculation(err) => {
                 eyre!("Class hash calculation error: {}", err)
             }
-            AccountError::ClassCompression(err) => eyre!("Class compression error: {}", err),
             AccountError::FeeOutOfRange => eyre!("Fee calculation overflow"),
         })
 }
@@ -115,7 +116,7 @@ pub async fn deploy_contract(
     let compiled_class_hash = casm
         .class_hash()
         .map_err(|e| eyre!("Failed to get class hash from CASM: {}", e))?;
-    let declare_tx = signer.declare_v2(
+    let declare_tx = signer.declare_v3(
         sierra
             .clone()
             .flatten()
@@ -133,7 +134,7 @@ pub async fn deploy_contract(
 
     let contract_factory = ContractFactory::new(class_hash, signer);
 
-    let deploy_tx = contract_factory.deploy_v1(constructor_args, Felt::ZERO, true);
+    let deploy_tx = contract_factory.deploy_v3(constructor_args, Felt::ZERO, true);
 
     let deployed_address = deploy_tx.deployed_address();
     deploy_tx

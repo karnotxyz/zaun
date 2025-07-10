@@ -47,7 +47,6 @@ pub async fn invoke_contract(
     };
     signer
         .execute_v3(vec![call])
-        .gas_estimate_multiplier(1.5)
         .send()
         .await
         .map_err(|account_error| match account_error {

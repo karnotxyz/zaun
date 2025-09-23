@@ -9,6 +9,9 @@ use hex::FromHex;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
+use ethers::middleware::Middleware;
+
+use ethers::types::U256;
 
 /// Ethers library allows multiple signer backends and transports.
 /// For simplicity we use local wallet (basically private key) and
@@ -148,5 +151,57 @@ pub async fn deploy_contract<T: Tokenize>(
 
     let factory = ContractFactory::new(abi, bytecode, client.clone());
 
-    Ok(factory.deploy(contructor_args)?.send().await?)
+    let mut deployer = factory.deploy(contructor_args)?;
+
+    // Get current gas price from the network
+    let current_gas_price = client.get_gas_price().await
+      .unwrap();
+
+    // Estimate gas using the client directly
+    let estimated_gas = client.estimate_gas(&deployer.tx, None).await
+      .unwrap();
+
+    // Add 20% buffer to the estimated gas
+    let gas_with_buffer = estimated_gas * 120 / 100;
+
+    let total_cost_wei: U256 = gas_with_buffer * current_gas_price;
+
+    // Convert to ETH for display (1 ETH = 10^18 wei)
+    let total_cost_eth = total_cost_wei.as_u128() as f64 / 1e18;
+
+    // Convert gas price to GWEI for display (1 GWEI = 10^9 wei)
+    let gas_price_gwei = current_gas_price.as_u64() as f64 / 1e9;
+
+    // Get network information
+    let chain_id = client.get_chainid().await
+      .unwrap();
+
+    println!("Chain ID: {}", chain_id);
+
+    // Add this before your deployment
+    let balance = client.get_balance(client.address(), None).await
+      .unwrap();
+
+
+    let balance_eth = balance.as_u128() as f64 / 1e18;
+    println!("Wallet address: {:?}", client.address());
+    println!("Current balance: {:.6} ETH", balance_eth);
+    println!("Required for transaction: {:.6} ETH", total_cost_eth);
+
+    if balance < total_cost_wei {
+        return Err(Error::EthersProvider(ProviderError::CustomError(
+            format!("Insufficient balance. Have: {:.6} ETH, Need: {:.6} ETH", balance_eth, total_cost_eth)
+        )));
+    }
+
+    println!("Estimated gas units: {}", estimated_gas);
+    println!("Gas with buffer: {}", gas_with_buffer);
+    println!("Current gas price: {:.2} GWEI", gas_price_gwei);
+    println!("Total transaction cost: {:.6} ETH", total_cost_eth);
+
+    // Set both gas limit and gas price
+    deployer.tx.set_gas(gas_with_buffer);
+    deployer.tx.set_gas_price(current_gas_price);
+
+    Ok(deployer.send().await?)
 }

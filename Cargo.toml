@@ -20,7 +20,7 @@ repository = "https://github.com/keep-starknet-strange/zaun/"
 version = "0.1.0"
 
 [workspace.dependencies]
-ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "f0e5b194f09c533feb10d1a686ddb9e5946ec107" }
+ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "6e2ff0ef8af8c0ee3c21b7e1960f8c025bcd5588" }
 log = "0.4.20"
 thiserror = "1.0.51"
 num-traits = "0.2.17"

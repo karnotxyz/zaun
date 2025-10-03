@@ -62,7 +62,7 @@
 #                                                                             #
 # =========================================================================== #
 
-FROM debian:bookworm AS builder
+FROM --platform=linux/amd64 debian:bookworm AS builder
 WORKDIR /contracts
 
 RUN apt-get -y update && apt-get install -y \
@@ -80,6 +80,8 @@ RUN foundryup
 
 # =========================================================================== #
 #                         STARKGATE CONTRACTS (4594188)                       #
+#                     One commit behind the latest release                    #
+#                          Branch: upstream/cairo-1                           #
 # =========================================================================== #
 
 FROM builder AS starkgate-4594188
@@ -109,9 +111,11 @@ RUN python3 convert.py
 
 # =========================================================================== #
 #                         STARKGATE CONTRACTS (c08863a)                       #
+#                     Branch: upstream/update-cairo-0.9.0                     #
+#                           (legacy contracts)                                #
 # =========================================================================== #
 
-FROM ciimage/python:3.7 AS starkgate-c08863a
+FROM --platform=linux/amd64 ciimage/python:3.7  AS starkgate-c08863a
 ENV STARKGATE_REV="c08863a1f08226c09f1d0748124192e848d73db9"
 ENV SOLC_VERSION="0.6.12"
 ENV SOLC_URL="https://binaries.soliditylang.org/linux-amd64/solc-linux-amd64-v$SOLC_VERSION+commit.27d51765"
@@ -149,6 +153,7 @@ RUN python3 convert.py
 
 # =========================================================================== #
 #                         STARKGATE CONTRACTS (82e651f)                       #
+#                 Also uses cairo 0, on upstream/main latest commit           #
 # =========================================================================== #
 
 FROM builder AS starkgate-82e651f
@@ -229,13 +234,13 @@ COPY foundry.toml remappings.txt .
 
 RUN mkdir -p lib
 RUN cd lib && \
-    git clone https://github.com/starkware-libs/cairo-lang.git && \
-    cd cairo-lang && \
-    git checkout $CAIRO_LANG_REV
+  git clone https://github.com/starkware-libs/cairo-lang.git && \
+  cd cairo-lang && \
+  git checkout $CAIRO_LANG_REV
 RUN cd lib && \
-    git clone https://github.com/starknet-io/starknet-token.git && \
-    cd starknet-token && \
-    git checkout $STARKNET_TOKEN_REV
+  git clone https://github.com/starknet-io/starknet-token.git && \
+  cd starknet-token && \
+  git checkout $STARKNET_TOKEN_REV
 
 # Buld
 RUN forge build
@@ -267,6 +272,7 @@ WORKDIR ../starkgate_c08863a
 
 ENV STARKGATE_DIR="/contracts/starkgate-contracts/build/Release/src"
 ENV ARTIFACTS_SOLID_c08863a="$STARKGATE_DIR/starkware/solidity/upgrade"
+
 
 COPY --from=starkgate-c08863a $ARTIFACTS_SOLID_c08863a/Proxy.json Proxy_3_0_2.json
 

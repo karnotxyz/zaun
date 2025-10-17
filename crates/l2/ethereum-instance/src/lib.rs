@@ -142,7 +142,8 @@ pub async fn deploy_contract<T: Tokenize>(
             .take();
 
         let abi = serde_json::from_value(abi_value)?;
-        let bytecode = Bytes::from_hex(bytecode_value.as_str().ok_or(Error::BytecodeObject)?)?;
+        let bytecode =
+            Bytes::from(hex::decode(bytecode_value.as_str().ok_or(Error::BytecodeObject)?)?);
         (abi, bytecode)
     };
 

@@ -5,7 +5,6 @@ use ethers::providers::{Http, Provider, ProviderError};
 use ethers::signers::{LocalWallet, Signer};
 use ethers::types::Bytes;
 use ethers::utils::{Anvil, AnvilInstance};
-use hex::FromHex;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;

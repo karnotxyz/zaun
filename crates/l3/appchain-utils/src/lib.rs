@@ -132,6 +132,7 @@ pub async fn deploy_contract(
         .class_hash()
         .map_err(|e| eyre!("Failed to get class hash from Sierra: {}", e))?;
 
+    #[allow(deprecated)]
     let contract_factory = ContractFactory::new(class_hash, signer);
 
     let deploy_tx = contract_factory.deploy_v3(constructor_args, Felt::ZERO, true);

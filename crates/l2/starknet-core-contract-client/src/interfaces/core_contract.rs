@@ -47,6 +47,7 @@ pub trait StarknetCoreContractTrait<M: Middleware> {
     ) -> Result<Option<TransactionReceipt>, Error<M>>;
 }
 
+#[allow(dead_code)]
 pub struct StandardCoreContract<M: Middleware>(pub StarknetCoreContract<M>);
 
 #[async_trait]

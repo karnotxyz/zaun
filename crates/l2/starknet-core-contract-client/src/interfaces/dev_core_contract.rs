@@ -25,6 +25,7 @@ impl<M: Middleware> DevCoreContract<M> {
             .update_state_override(global_root, block_number, block_hash)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -40,6 +41,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
             .set_program_hash(new_program_hash)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -52,6 +54,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
             .set_config_hash(new_config_hash)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -64,6 +67,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
             .set_message_cancellation_delay(delay_in_seconds)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -102,6 +106,7 @@ impl<M: Middleware> StarknetCoreContractTrait<M> for DevCoreContract<M> {
             .update_state(program_output, onchain_data_hash, onchain_data_size)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

@@ -74,6 +74,7 @@ where
             .value(fee)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -88,6 +89,7 @@ where
             .withdraw(token, amount)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -100,6 +102,7 @@ where
             .set_l2_token_bridge(l2_token_bridge)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -112,6 +115,7 @@ where
             .enable_withdrawal_limit(token)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -124,6 +128,7 @@ where
             .disable_withdrawal_limit(token)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -137,6 +142,7 @@ where
             .set_max_total_balance(token, max_total_balance)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

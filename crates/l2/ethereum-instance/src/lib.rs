@@ -5,7 +5,6 @@ use ethers::providers::{Http, Provider, ProviderError};
 use ethers::signers::{LocalWallet, Signer};
 use ethers::types::Bytes;
 use ethers::utils::{Anvil, AnvilInstance};
-use hex::FromHex;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
@@ -145,7 +144,9 @@ pub async fn deploy_contract<T: Tokenize>(
             .take();
 
         let abi = serde_json::from_value(abi_value)?;
-        let bytecode = Bytes::from_hex(bytecode_value.as_str().ok_or(Error::BytecodeObject)?)?;
+        let bytecode_str = bytecode_value.as_str().ok_or(Error::BytecodeObject)?;
+        let bytecode_str = bytecode_str.strip_prefix("0x").unwrap_or(bytecode_str);
+        let bytecode: Bytes = hex::decode(bytecode_str)?.into();
         (abi, bytecode)
     };
 
@@ -203,5 +204,8 @@ pub async fn deploy_contract<T: Tokenize>(
     deployer.tx.set_gas(gas_with_buffer);
     deployer.tx.set_gas_price(current_gas_price);
 
-    Ok(deployer.send().await?)
+    Ok(deployer
+        .confirmations(2_usize)
+        .send()
+        .await?)
 }

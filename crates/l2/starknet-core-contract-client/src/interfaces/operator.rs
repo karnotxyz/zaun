@@ -42,6 +42,7 @@ where
             .register_operator(new_operator)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
@@ -53,6 +54,7 @@ where
             .unregister_operator(removed_operator)
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }

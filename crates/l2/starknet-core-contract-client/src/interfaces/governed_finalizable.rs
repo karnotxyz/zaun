@@ -35,6 +35,7 @@ where
             .finalize()
             .send()
             .await?
+            .confirmations(2)
             .await
             .map_err(Into::into)
     }
